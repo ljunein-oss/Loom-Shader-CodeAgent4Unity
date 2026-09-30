@@ -7,7 +7,6 @@
 ## 环境要求
 
 - Unity 2022 或更新版本，推荐 Unity 2022.3 LTS。
-- 已验证环境：Windows、Unity 2022.3.17f1c1。其他 Unity 版本与操作系统尚未逐一测试。
 - 可访问模型服务的网络，以及对应服务商的 API Key；使用 Ollama 时需自行启动本地服务。
 - 插件仅在 Editor 运行，不进入游戏运行时。
 
@@ -38,7 +37,7 @@
 
 | 服务 | 配置 |
 | --- | --- |
-| DeepSeek | 预设 deepseek-flash、deepseek-v4-pro；地址 https://api.deepseek.com/chat/completions |
+| DeepSeek | 预设 deepseek-V41-flash、deepseek-v4-pro；地址 https://api.deepseek.com/chat/completions |
 | GLM | 预设 glm-5.3；地址 https://open.bigmodel.cn/api/paas/v4/chat/completions |
 | OpenAI | 使用支持 Chat Completions 的模型 ID；地址 https://api.openai.com/v1/chat/completions |
 | Claude | 原生 Messages 接口；预设 claude-fable-5-1、claude-opus-5-5、claude-sonnet-5-5 |
@@ -75,14 +74,6 @@ URP/HDRP 请求应明确 Unity、渲染管线版本及目标平台。Shader 能�
 - 回滚会覆盖目标文件后续的人工修改；它不是三方合并或完整工程备份。
 - 新建目录可能保留；场景和外部文件操作不在这套回滚范围内。
 
-## 1.2 Quill 更新
-
-- 工具菜单和窗口名称统一为 Shader-CodeAgent4Unity。
-- 新增生成代码审阅入口、Assets 文件写入、持久快照及回滚。
-- 移除 Gemini、Qwen 预设；旧 Provider 配置迁移到 DeepSeek，清除关联旧 Key。
-- 更新 DeepSeek 和 GLM 预设，允许手动填写模型 ID。
-- 修复 Windows 路径格式检查、对话上下文位置和接口检测流程。
-- 增加本机已保存 Key 的删除按钮。
 
 ## 测试记录
 
@@ -97,19 +88,143 @@ URP/HDRP 请求应明确 Unity、渲染管线版本及目标平台。Shader 能�
 
 ## 注意事项
 
-- 当前是人工审阅后写单文件的助手，尚未实现自主多步执行、Shell、场景或系统环境修改。
-- 仅允许 Assets 内目标文件，不支持链接目录/文件；生成代码仍需人工审阅。
+- 当前是人工审阅后写单文件的助手，尚未实现自主多步执行、Shell、场景或系统环境修改（以后会弄？）。
+- 仅允许 Assets 内目标文件，不支持链接目录/文件；生成代码仍需人工审阅（咱就是说也别太懒）。
 - 发送的上下文及附加文件会传给所选服务商，API 调用按供应商规则计费。
 - EditorPrefs 不是加密密钥保险库。不要提交 Key、个人配置、请求日志或私有工程内容。
 - 建议使用 Git 备份工程，并先在测试工程试用。
 
 ## License
 
-本项目采用 [MIT License](LICENSE)。允许使用、修改和分发，包括商业用途；分发时保留版权及许可声明。软件按原样提供，不附带担保。第三方模型服务另受其服务条款约束。
+本项目采用 [MIT License](LICENSE)
+
+## 1.2 Quill 更新
+
+- 工具菜单和窗口名称统一为 Shader-CodeAgent4Unity。
+- 新增生成代码审阅入口、Assets 文件写入、持久快照及回滚。
+- 更新 DeepSeek 和 GLM 预设，允许手动填写模型 ID。
+- 修复 Windows 路径格式检查、对话上下文位置和接口检测流程。
+- 增加本机已保存 Key 的删除按钮。
 
 ## 1.3 Quill 更新
 
-- 根据用户提供的官方网页截图及 PDF 更新模型：OpenAI 的 gpt-6-astra、gpt-6.1-sol、gpt-6-luna；Claude 的 claude-fable-5-1、claude-opus-5-5、claude-sonnet-5-5。
+- 更新模型：OpenAI 的 gpt-6-astra、gpt-6.1-sol、gpt-6-luna；Claude 的 claude-fable-5-1、claude-opus-5-5、claude-sonnet-5-5。
 - 恢复可选择的模型预设，修复下拉框首项选择问题；支持从供应商刷新账号可用模型列表。
+
+
 - 增加 Claude 原生 Messages 请求、鉴权和文本响应解析。
 - Unity 2022.3 编译验证通过。OpenAI/Claude 未使用付费 Key 完成端到端调用验证；截图确认的是模型 ID，不代表所有模型支持当前 Chat Completions 接口。Responses 适配仍未实现。
+
+# ENG
+
+# Shader-CodeAgent4Unity
+
+**1.3 Quill** · Unity **2022+** · MIT License
+
+Write Shaders, analyze C# errors, and apply changes with LLMs inside the Unity Editor — with human review, file snapshots, and rollback.
+
+## Requirements
+
+- Unity 2022 or newer; Unity 2022.3 LTS recommended.
+- Network access to your model provider, plus the corresponding API key. For Ollama, start the local service yourself.
+- The plugin runs in the Editor only; it is not included in game runtime.
+
+## Features
+
+| Feature | How to use |
+| --- | --- |
+| Shader / C# chat | Describe what you need, attach relevant files, get complete code |
+| Unity context | Optionally send the current scene, render pipeline, selected materials, and recent errors |
+| File review | Send the first code block of the latest reply to a dedicated review window |
+| File write | Write to files under Assets after confirming the target path and content |
+| Persistent snapshots | Save the original file and its .meta before writing |
+| Rollback | Restore existing files; undo newly created files and their .meta |
+| Custom endpoint | Configure a Chat Completions–compatible URL and model ID |
+
+## Installation
+
+1. Download the repository ZIP or clone the repository.
+2. Copy **both** `Assets/Editor/AIAssistantWindow.cs` and `Assets/Editor/QuillRollback.cs` into your project's `Assets/Editor`.
+3. Wait for Unity to compile, then open **Tools > Shader-CodeAgent4Unity > Open**.
+4. When upgrading from an older version, overwrite the corresponding files and avoid keeping copies of the same class in other directories.
+
+This is currently a source-based install, not a Unity Package Manager package.
+
+## Model configuration
+
+Open Settings, choose a Provider, and fill in Endpoint, Model, and API Key. The Model field is always editable and should contain the actual API ID accepted by the provider.
+
+| Service | Configuration |
+| --- | --- |
+| DeepSeek | Presets `deepseek-V41-flash`, `deepseek-v4-pro`; endpoint https://api.deepseek.com/chat/completions |
+| GLM | Preset `glm-5.3`; endpoint https://open.bigmodel.cn/api/paas/v4/chat/completions |
+| OpenAI | Use a model ID that supports Chat Completions; endpoint https://api.openai.com/v1/chat/completions |
+| Claude | Native Messages API; presets `claude-fable-5-1`, `claude-opus-5-5`, `claude-sonnet-5-5` |
+| Ollama | Defaults to http://localhost:11434/v1/chat/completions; enter an installed model ID |
+| Custom | Provide the full Chat Completions endpoint, model ID, and key yourself |
+
+Claude uses Messages; the other presets use Chat Completions and do not include Responses/Codex-specific protocol support. Whether a provider authorizes a given model depends on your account and the actual API response. Gemini and Qwen have no built-in presets.
+
+**Detect endpoint compatibility** sends one small paid test request and shows the result in the chat. The API key is stored in the local Unity EditorPrefs; you can delete the value saved by the plugin via **Forget saved API key**.
+
+## Writing a Shader
+
+1. Open the plugin and configure a model.
+2. Optionally use **Attach file** to attach an existing Shader; enable render pipeline and scene context if needed.
+3. Example request: *Write a cyan Unlit Shader for the Unity 2022.3 Built-in pipeline, returning a single complete ShaderLab code block.*
+4. Click **Send**, review the reply, then click **Review latest generated code**.
+5. In **Absolute Assets path**, enter the full path, e.g. `D:/MyProject/Assets/Shaders/Cyan.shader`.
+6. Review all the code, click **Apply with snapshot**, and confirm.
+7. Wait for Unity to compile and check the Console for errors. Create a material, assign the Shader, and verify it in your own scene.
+
+URP/HDRP requests should explicitly state the Unity version, render pipeline version, and target platform. A Shader that imports successfully is not guaranteed to render correctly on every pipeline and GPU.
+
+## Fixing C# errors
+
+Use **Attach file** to attach the relevant scripts, click **Grab errors** to collect errors, and describe the reproduction steps. Ask the model to return complete single-file code, then specify the original script path in the review window. Currently only the first code block of the latest reply is extracted; review and apply multiple files separately.
+
+## Rollback
+
+Open **Tools > Shader-CodeAgent4Unity > File review and rollback**, click **Rollback latest**, and confirm.
+
+- A snapshot is saved before every file write, including the original bytes of existing files and their .meta.
+- Restores the most recent snapshot that has not yet been undone; newly created files and their .meta are deleted.
+- Snapshots are stored in the current project's `Library/QuillSnapshots` and survive an editor restart; deleting Library loses the snapshots.
+- Rollback overwrites any manual changes made to the target file afterward; it is not a three-way merge or a full project backup.
+- Newly created directories may remain; scene and external file operations are outside the scope of this rollback.
+
+## Test log
+
+Executed in a standalone Unity 2022.3.17f1c1 project:
+
+- Shader generated via the real DeepSeek Flash API; Unity import check passed.
+- Rollback of a modified file and its .meta, byte-for-byte comparison passed.
+- Rollback and deletion of a newly created file and its .meta passed.
+- Plugin C# compile check passed.
+
+No window recording GIF yet; end-to-end tests across all render pipelines, the current user's scene, and all providers are not complete.
+
+## Notes
+
+- This is currently a human-reviewed, single-file writing assistant. Autonomous multi-step execution, Shell, and scene or system-level modifications are not implemented yet (maybe later?).
+- Only target files under Assets are allowed; linked directories/files are not supported. Generated code still requires human review (come on, don't be that lazy).
+- Sent context and attached files are transmitted to the selected provider; API calls are billed according to the provider's rules.
+- EditorPrefs is not an encrypted key vault. Do not commit keys, personal configuration, request logs, or private project content.
+- Back up your project with Git, and try it in a test project first.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
+## 1.2 Quill update
+
+- Unified the tool menu and window name to Shader-CodeAgent4Unity.
+- Added a generated-code review entry point, Assets file writing, persistent snapshots, and rollback.
+- Updated the DeepSeek and GLM presets and allowed manual model ID entry.
+- Fixed Windows path format checks, chat context position, and the endpoint detection flow.
+- Added a button to delete the locally saved key.
+
+## 1.3 Quill update
+
+- Updated models: OpenAI's `gpt-6-astra`, `gpt-6.1-sol`, `gpt-6-luna`; Claude's `claude-fable-5-1`, `claude-opus-5-5`, `claude-sonnet-5-5`.
+- Restored selectable model presets and fixed the dropdown first-item selection issue; added support for refreshing the account's available model list from the provider.
