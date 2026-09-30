@@ -1,0 +1,19 @@
+﻿# Unity generated folders
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+UserSettings/
+MemoryCaptures/
+Logs/
+
+# IDE
+.vs/
+.vscode/
+*.csproj
+*.sln
+
+# Secrets
+.env
+*.key
