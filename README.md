@@ -1,6 +1,8 @@
 # Shader-CodeAgent4Unity
 
-**1.3 Quill** · Unity **2022+** · MIT License
+**1.3 Quill**
+[![Unity](https://img.shields.io/badge/Unity-2022.3%2B-black?logo=unity)](https://unity.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE.md)
 
 在 Unity Editor 内使用大模型编写 Shader、分析 C# 错误，并通过人工审阅、文件快照和回滚应用修改。
 
