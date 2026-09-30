@@ -1,6 +1,6 @@
 # Shader-CodeAgent4Unity
 
-**1.2 Quill** · Unity **2022+** · MIT License
+**1.3 Quill** · Unity **2022+** · MIT License
 
 在 Unity Editor 内使用大模型编写 Shader、分析 C# 错误，并通过人工审阅、文件快照和回滚应用修改。
 
@@ -41,11 +41,11 @@
 | DeepSeek | 预设 deepseek-flash、deepseek-v4-pro；地址 https://api.deepseek.com/chat/completions |
 | GLM | 预设 glm-5.3；地址 https://open.bigmodel.cn/api/paas/v4/chat/completions |
 | OpenAI | 使用支持 Chat Completions 的模型 ID；地址 https://api.openai.com/v1/chat/completions |
-| Claude | 当前通过 Custom 配置 Chat Completions 兼容网关；原生 Messages 适配尚未实现 |
+| Claude | 原生 Messages 接口；预设 claude-fable-5-1、claude-opus-5-5、claude-sonnet-5-5 |
 | Ollama | 默认 http://localhost:11434/v1/chat/completions，填写已安装的模型 ID |
 | Custom | 自行填写完整 Chat Completions endpoint、模型 ID 和 Key |
 
-本版请求协议为 Chat Completions，不包含 Responses/Codex 专用协议适配。供应商是否授权某个模型，以账号和接口实际响应为准。Gemini 和 Qwen 不提供内置预设。
+Claude 使用 Messages；其他预设使用 Chat Completions，不包含 Responses/Codex 专用协议适配。供应商是否授权某个模型，以账号和接口实际响应为准。Gemini 和 Qwen 不提供内置预设。
 
 Detect endpoint compatibility 会发送一次小型付费测试请求，并在对话中显示结果。API Key 保存在本机 Unity EditorPrefs；可通过 **Forget saved API key** 删除插件保存的值。
 
@@ -106,3 +106,10 @@ URP/HDRP 请求应明确 Unity、渲染管线版本及目标平台。Shader 能�
 ## License
 
 本项目采用 [MIT License](LICENSE)。允许使用、修改和分发，包括商业用途；分发时保留版权及许可声明。软件按原样提供，不附带担保。第三方模型服务另受其服务条款约束。
+
+## 1.3 Quill 更新
+
+- 根据用户提供的官方网页截图及 PDF 更新模型：OpenAI 的 gpt-6-astra、gpt-6.1-sol、gpt-6-luna；Claude 的 claude-fable-5-1、claude-opus-5-5、claude-sonnet-5-5。
+- 恢复可选择的模型预设，修复下拉框首项选择问题；支持从供应商刷新账号可用模型列表。
+- 增加 Claude 原生 Messages 请求、鉴权和文本响应解析。
+- Unity 2022.3 编译验证通过。OpenAI/Claude 未使用付费 Key 完成端到端调用验证；截图确认的是模型 ID，不代表所有模型支持当前 Chat Completions 接口。Responses 适配仍未实现。
